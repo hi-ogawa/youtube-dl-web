@@ -11,6 +11,9 @@ rm -rf build/tailwind/production
 # tailwind
 NODE_ENV=production npm run tailwind
 
+# copy assets not managed by remix
+NODE_ENV=production bash scripts/copy-assets.sh
+
 # default "node-cjs" build with custom server main
 NODE_ENV=production BUILD_VERCEL=1 npx remix build
 
