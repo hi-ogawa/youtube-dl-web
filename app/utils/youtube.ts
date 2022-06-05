@@ -1,7 +1,7 @@
 // https://github.com/ytdl-org/youtube-dl/blob/9aa8e5340f3d5ece372b983f8e399277ca1f1fe4/youtube_dl/extractor/youtube.py#L1819-L1830
-interface FormatInfo {
+export interface FormatInfo {
   url: string;
-  filesize: number;
+  filesize: number | null;
   format_id: string;
   format_note: string;
   ext: string;

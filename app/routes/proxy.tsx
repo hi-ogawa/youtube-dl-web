@@ -1,8 +1,6 @@
 import { redirect } from "@remix-run/server-runtime";
-import { chunk, range, sum } from "lodash";
 import { z } from "zod";
 import { createLoader } from "../utils/loader-utils";
-import { tinyassert } from "../utils/tinyassert";
 
 //
 // proxy for cross origin resouce
@@ -12,6 +10,8 @@ const REQUEST_SCHEMA = z.object({
   url: z.string().url(),
 });
 
+const PASSTHROUGH_HEADERS = ["range"];
+
 export const loader = createLoader(async function (this) {
   const parsed = REQUEST_SCHEMA.safeParse(this.getQuery());
   if (!parsed.success) {
@@ -19,73 +19,12 @@ export const loader = createLoader(async function (this) {
     return redirect("/");
   }
   const { url } = parsed.data;
-  //
-  // google's media resource is significantly throttled with http.
-  // http3/quic is expected to be used for fast download (cf. https://github.com/hi-ogawa/misc/blob/master/archlinux-packages/curl-quiche/README.md)
-  // no support on nodejs yet https://github.com/nodejs/node/pull/38233
-  // here we use adhoc range requests in parallel.
-  //
-  const body = await fetchByRangesInParallel(url);
-  return new Response(body);
-});
-
-const CHUNK_SIZE = 50_000;
-const PARALLEL = 4;
-
-async function fetchByRangesInParallel(
-  url: string
-): Promise<ReadableStream<Uint8Array>> {
-  const totalSize = await fetchTotalSize(url);
-  const numChunks = Math.floor(totalSize / CHUNK_SIZE);
-  const rangeHeaders = range(numChunks).map((i) => {
-    const b1 = CHUNK_SIZE * i;
-    const b2 = Math.min(CHUNK_SIZE * (i + 1), totalSize) - 1;
-    return `bytes=${b1}-${b2}`;
-  });
-
-  const rangeHeadersParallels = chunk(rangeHeaders, PARALLEL);
-  let i = 0;
-
-  return new ReadableStream({
-    async pull(controller) {
-      if (i >= rangeHeadersParallels.length) {
-        controller.close();
-        return;
-      }
-      const parallels = rangeHeadersParallels[i++];
-      const dataPromises = parallels.map(async (rangeHeader) => {
-        const res = await fetch(url, { headers: { range: rangeHeader } });
-        tinyassert(res.ok);
-        tinyassert(res.body);
-        const arrayBuffer = await res.arrayBuffer();
-        return new Uint8Array(arrayBuffer);
-      });
-      const data = await Promise.all(dataPromises);
-      controller.enqueue(concatArrays(data));
-    },
-  });
-}
-
-async function fetchTotalSize(url: string): Promise<number> {
-  const res = await fetch(url, { headers: { range: "bytes=0-0" } });
-  tinyassert(res.ok);
-
-  const contentRange = res.headers.get("content-range");
-  tinyassert(contentRange);
-
-  const totalMatch = contentRange.match(/bytes 0-0\/(\d*)/);
-  tinyassert(totalMatch);
-
-  return Number(totalMatch[1]);
-}
-
-function concatArrays(arrays: Uint8Array[]): Uint8Array {
-  const total = sum(arrays.map((a) => a.length));
-  const res = new Uint8Array(new ArrayBuffer(total));
-  let offset = 0;
-  for (const array of arrays) {
-    res.set(array, offset);
-    offset += array.length;
+  const headers = new Headers();
+  for (const key of PASSTHROUGH_HEADERS) {
+    const value = this.request.headers.get(key);
+    if (value) {
+      headers.append(key, value);
+    }
   }
-  return res;
-}
+  return fetch(url, { headers });
+});
