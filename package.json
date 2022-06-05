@@ -21,8 +21,8 @@
     "test": "NODE_ENV=test vitest",
     "test-e2e": "NODE_ENV=test playwright test",
     "build": "bash scripts/vercel.sh",
-    "deploy:staging": "npm run vercel:build && vercel deploy --prebuilt build/remix/production/deploy",
-    "deploy:production": "npm run vercel:build && vercel deploy --prebuilt build/remix/production/deploy --prod",
+    "deploy": "npm run build && vercel deploy --prebuilt build/remix/production/deploy",
+    "deploy:production": "npm run build && vercel deploy --prebuilt build/remix/production/deploy --prod",
     "diff": "git diff --name-only ${DIFF_COMMIT:-HEAD} && git ls-files --others --exclude-standard",
     "qrcode": "qrcode-terminal http://$(ip -o -4 address list wlan0 | awk '{print $4}' | cut -d / -f 1):3000"
   },
@@ -57,6 +57,7 @@
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
     "daisyui": "^2.2.2",
+    "esbuild": "^0.14.42",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.4",
