@@ -1,0 +1,22 @@
+{
+  "include": ["app"],
+  "compilerOptions": {
+    "rootDir": "app",
+    "outDir": "build/tsc",
+    "jsx": "react",
+    "module": "commonjs",
+    "target": "es2021",
+    "lib": ["es2021", "dom"],
+    "types": ["@types/node"],
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true
+  }
+}

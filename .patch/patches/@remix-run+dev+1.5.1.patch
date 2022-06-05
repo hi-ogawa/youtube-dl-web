@@ -1,0 +1,12 @@
+diff --git a/node_modules/@remix-run/dev/compiler/utils/tsconfig/index.js b/node_modules/@remix-run/dev/compiler/utils/tsconfig/index.js
+index 8ac5a14..0ff04b9 100644
+--- a/node_modules/@remix-run/dev/compiler/utils/tsconfig/index.js
++++ b/node_modules/@remix-run/dev/compiler/utils/tsconfig/index.js
+@@ -30,7 +30,6 @@ function createMatchPath() {
+     return undefined;
+   }
+ 
+-  writeConfigDefaults.writeConfigDefaults(configLoaderResult.configFileAbsolutePath);
+   return tsConfigPaths__default["default"].createMatchPath(configLoaderResult.absoluteBaseUrl, configLoaderResult.paths, configLoaderResult.mainFields, configLoaderResult.addMatchAll);
+ }
+ 
