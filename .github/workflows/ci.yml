@@ -1,0 +1,42 @@
+name: ci
+"on":
+  - push
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: "6.29.1"
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+      - run: pnpm run install-with-patch -- --frozen-lockfile
+      - run: npm run lint:check
+
+  tsc:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: "6.29.1"
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+      - run: pnpm run install-with-patch -- --frozen-lockfile
+      - run: npm run tsc
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: "6.29.1"
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+      - run: pnpm run install-with-patch -- --frozen-lockfile
+      - run: npm run build
