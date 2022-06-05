@@ -13,7 +13,7 @@ const Page: React.FC = () => {
   return (
     <html lang="en" className="h-full">
       <head>
-        <title>youtube-download-serverless</title>
+        <title>youtube-dl-web</title>
         <meta charSet="utf-8" />
         <meta
           name="viewport"
@@ -25,6 +25,8 @@ const Page: React.FC = () => {
             process.env.NODE_ENV +
             "/index.css")}
         />
+        <link rel="icon" href="/_copy/icon-32.png" />
+        <link rel="manifest" href="/_copy/manifest.json" />
       </head>
       <body className="h-full">
         <TopProgressBar />

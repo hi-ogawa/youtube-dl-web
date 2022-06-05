@@ -3,7 +3,7 @@
     "install-with-patch": "npm -C .patch run build && pnpm install",
     "clean": "rm -rf build",
     "dev": "npm run dev:prepare && concurrently -k 'npm:remix:dev' 'npm:tsc:dev' 'npm:tailwind:dev' -c 'bgBlue.bold,bgYellow.bold,bgMagenta.bold'",
-    "dev:prepare": "npm run tailwind",
+    "dev:prepare": "npm run tailwind && bash scripts/copy-assets.sh",
     "dev:e2e": "NODE_ENV=test npm run dev:prepare && NODE_ENV=test PORT=3001 npm run remix:dev",
     "remix:dev": "remix dev",
     "tsc": "tsc",
