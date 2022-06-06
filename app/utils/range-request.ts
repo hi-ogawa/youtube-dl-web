@@ -17,6 +17,53 @@ import { tinyassert } from "./tinyassert";
 const CHUNK_SIZE = 50_000;
 const PARALLEL = 2;
 
+interface StreamResult {
+  offset: number;
+  data: Uint8Array;
+}
+
+export function fetchByRangesInParallelV2(
+  url: string
+): ReadableStream<StreamResult> {
+  let cancelled = false;
+
+  return new ReadableStream({
+    async start() {
+      const totalSize = await fetchTotalSize(url);
+
+      const numChunks = Math.floor(totalSize / CHUNK_SIZE);
+      const rangeHeaders = range(numChunks).map((i) => {
+        const b1 = CHUNK_SIZE * i;
+        const b2 = Math.min(CHUNK_SIZE * (i + 1), totalSize) - 1;
+        return `bytes=${b1}-${b2}`;
+      });
+
+      const rangeHeadersParallels = chunk(rangeHeaders, PARALLEL);
+    },
+
+    async pull(controller) {
+      if (i >= rangeHeadersParallels.length) {
+        controller.close();
+        return;
+      }
+      const parallels = rangeHeadersParallels[i++];
+      const dataPromises = parallels.map(async (rangeHeader) => {
+        const res = await fetch(url, { headers: { range: rangeHeader } });
+        tinyassert(res.ok);
+        tinyassert(res.body);
+        const arrayBuffer = await res.arrayBuffer();
+        return new Uint8Array(arrayBuffer);
+      });
+      const data = await Promise.all(dataPromises);
+      controller.enqueue(concatArrays(data));
+    },
+
+    cancel() {
+      cancelled = true;
+    },
+  });
+}
+
 // TODO: let the caller concatenate the results by returning ReadableStream<{ offset: number, data: Uint8Array }>
 export function fetchByRangesInParallel(
   url: string,
