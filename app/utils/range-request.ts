@@ -22,7 +22,7 @@ export function fetchByRangesInParallel(
   url: string,
   totalSize: number
 ): ReadableStream<Uint8Array> {
-  const numChunks = Math.floor(totalSize / CHUNK_SIZE);
+  const numChunks = Math.ceil(totalSize / CHUNK_SIZE);
   const rangeHeaders = range(numChunks).map((i) => {
     const b1 = CHUNK_SIZE * i;
     const b2 = Math.min(CHUNK_SIZE * (i + 1), totalSize) - 1;
