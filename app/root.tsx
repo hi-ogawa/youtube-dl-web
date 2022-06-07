@@ -30,7 +30,7 @@ const Page: React.FC = () => {
       </head>
       <body className="h-full">
         <TopProgressBar />
-        <div className="h-full flex flex-col gap-2 m-2">
+        <div className="h-full flex flex-col gap-2 p-2">
           <div className="w-full flex justify-center">
             <div className="w-full max-w-lg">
               <SearchForm />
