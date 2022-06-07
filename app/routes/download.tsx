@@ -192,9 +192,9 @@ const DownloadButton: React.FC<{ title: string; formatInfo: FormatInfo }> = (
         onClick={cancelDownload}
       >
         <X size="20" />
-        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[24px] h-[24px]">
+        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[26px] h-[26px]">
           <RadialProgress
-            className="w-[24px] h-[24px]"
+            className="w-full h-full"
             progress={progress / filesize}
           />
         </div>
@@ -275,31 +275,41 @@ const VideoComponent: React.FC<{
   );
 };
 
+// cf. https://github.com/mui/material-ui/blob/3f30cf2ad67d87db4df9e3f6dad0b028b5f9c7cd/packages/mui-material/src/CircularProgress/CircularProgress.js
 // cf. https://github.com/hi-ogawa/ytsub-v3/pull/159
-export const RadialProgress: React.FC<{
+const RadialProgress: React.FC<{
   progress: number;
   className: string;
 }> = (props) => {
-  const deg = Math.floor(360 * props.progress);
+  const dashLength = Math.ceil(PATH_LENGTH * props.progress);
 
-  if (deg <= 180) {
-    // prettier-ignore
-    return (
-      <div className={`${props.className} relative`} style={{ transform: "rotate(45deg)" }}>
-        <div className="absolute inset-0 rounded-full border-2 border-gray-200" />
-        <div className="absolute inset-0 rounded-full border-2 border-t-transparent border-r-transparent border-b-primary border-l-primary" style={{ transform: `rotate(${deg}deg)` }} />
-        {/* TODO: above color leaks below */}
-        <div className="absolute inset-0 rounded-full border-2 border-t-transparent border-r-transparent border-gray-200 border-gray-200" />
-      </div>
-    );
-  }
-
-  // prettier-ignore
+  // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray
+  // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dashoffset
   return (
-    <div className={`${props.className} relative`} style={{ transform: "rotate(45deg)" }}>
-      <div className="absolute inset-0 rounded-full border-2 border-gray-200" />
-      <div className="absolute inset-0 rounded-full border-2 border-t-transparent border-r-transparent border-b-primary border-l-primary" style={{ transform: `rotate(${deg}deg)` }} />
-      <div className="absolute inset-0 rounded-full border-2 border-t-transparent border-r-transparent border-b-primary border-l-primary" style={{ transform: `rotate(180deg)`    }} />
-    </div>
+    <svg
+      className={`${props.className} text-primary`}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="3"
+      stroke-linecap="butt"
+    >
+      <circle className="text-gray-300" cx="12" cy="12" r="10" />
+      <circle
+        className="transition-[stroke-dasharray] transition-duration-200"
+        transform="rotate(-90 12 12)"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke-dasharray={`${dashLength} ${GAP_LENGTH}`}
+        pathLength={PATH_LENGTH}
+      />
+    </svg>
   );
 };
+
+const PATH_LENGTH = 100;
+const GAP_LENGTH = 10000;
