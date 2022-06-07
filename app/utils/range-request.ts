@@ -22,6 +22,11 @@ interface StreamResult {
   data: Uint8Array;
 }
 
+// TOOD: actually don't need to return partial data, so something like this would work fine
+type StreamResultV2 =
+  | { done: false; progress: number }
+  | { done: true; data: Uint8Array };
+
 export function fetchByRangesInParallelV2(
   url: string
 ): ReadableStream<StreamResult> {
