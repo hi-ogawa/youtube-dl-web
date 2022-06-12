@@ -5,10 +5,11 @@ import React from "react";
 import { AlertCircle, Download, X } from "react-feather";
 import { z } from "zod";
 import { createLoader } from "../utils/loader-utils";
-import { fetchByRangesInParallel } from "../utils/range-request";
+import { fetchByRanges } from "../utils/range-request";
 import {
   FormatInfo,
   VideoInfo,
+  YOUTUBE_DL_PROXY_URL,
   fetchVideoInfo,
   getThumbnailUrl,
   parseVideoId,
@@ -75,7 +76,7 @@ const Page: React.FC = () => {
             {sortedFormats.map((f) => (
               <tr key={f.url + f.format_id}>
                 <td>
-                  <DownloadButton title={title} formatInfo={f} />
+                  <DownloadButton title={title} formatInfo={f} id={id} />
                 </td>
                 <td>
                   {
@@ -113,10 +114,12 @@ export default Page;
 
 type DownloadState = "initial" | "loading" | "loaded";
 
-const DownloadButton: React.FC<{ title: string; formatInfo: FormatInfo }> = (
-  props
-) => {
-  const { filesize, url, ext } = props.formatInfo;
+const DownloadButton: React.FC<{
+  title: string;
+  formatInfo: FormatInfo;
+  id: string;
+}> = (props) => {
+  const { filesize, ext } = props.formatInfo;
 
   const [state, setState] = React.useState<DownloadState>("initial");
   const [progress, setProgress] = React.useState(0);
@@ -137,8 +140,15 @@ const DownloadButton: React.FC<{ title: string; formatInfo: FormatInfo }> = (
       return;
     }
     setState("loading");
-    const proxyUrl = "/proxy?" + new URLSearchParams({ url });
-    const stream = fetchByRangesInParallel(proxyUrl, filesize);
+
+    const proxyUrl =
+      YOUTUBE_DL_PROXY_URL +
+      "/download?" +
+      new URLSearchParams({
+        url: props.id,
+        format_id: props.formatInfo.format_id,
+      });
+    const stream = fetchByRanges(proxyUrl, filesize);
     streamRef.current = stream;
 
     const reader = stream.getReader();
