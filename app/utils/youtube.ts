@@ -43,10 +43,14 @@ export function parseVideoId(value: string): string | undefined {
 }
 
 // cf. https://github.com/hi-ogawa/youtube-dl-extract-info
-const API_URL = "https://youtube-dl-extract-info-hiro18181.vercel.app";
+
+export const YOUTUBE_DL_PROXY_URL =
+  "https://youtube-dl-extract-info-hiro18181.vercel.app"; // production
+// "https://youtube-dl-extract-info-hiro18181-hiogawa.vercel.app"; // staging
+// "http://localhost:5000"; // development
 
 export async function fetchVideoInfo(videoId: string): Promise<VideoInfo> {
-  const res = await fetch(`${API_URL}/${videoId}`);
+  const res = await fetch(`${YOUTUBE_DL_PROXY_URL}/info?url=${videoId}`);
   if (res.ok) {
     return res.json();
   }
