@@ -11,6 +11,7 @@ import {
   VideoInfo,
   YOUTUBE_DL_PROXY_URL,
   fetchVideoInfo,
+  fetchVideoInfoV2,
   getThumbnailUrl,
   parseVideoId,
 } from "../utils/youtube";
@@ -42,7 +43,8 @@ export const loader = createLoader(async function (this) {
     return redirect("/");
   }
 
-  const videoInfo = await fetchVideoInfo(videoId);
+  // const videoInfo = await fetchVideoInfo(videoId);
+  const videoInfo = await fetchVideoInfoV2(videoId);
   const res: LoaderData = { videoInfo };
   return res;
 });
