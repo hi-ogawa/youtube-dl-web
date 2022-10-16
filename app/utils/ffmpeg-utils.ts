@@ -22,18 +22,43 @@ export class FFmpegWrapper {
     metadata: Metadata
   ): Promise<ArrayBuffer> {
     const inFilePath = `in.${ext}`;
+    const coverPath = "cover.jpg";
     const outFilePath = "out.mp3";
     this.ffmpeg.FS("writeFile", inFilePath, new Uint8Array(data));
-    const args = [
-      "-y",
-      "-i",
-      inFilePath,
-      "-metadata",
-      `artist=${metadata.artist}`, // TODO: escape quote?
-      "-metadata",
-      `title=${metadata.title}`,
-      outFilePath,
-    ];
+    let args: string[];
+    if (metadata.cover) {
+      // ffmpeg -i in.mp4 -i cover.jpg -map 0:0 -map 1:0 -c:v copy -id3v2_version 3 -metadata artist=xxx -metadata title=yyy -metadata:s:v title='Album cover' -metadata:s:v comment='Cover (front)' out.mp3
+      this.ffmpeg.FS("writeFile", coverPath, new Uint8Array(metadata.cover));
+      args = [
+        "-y",
+        "-i",
+        inFilePath,
+        "-i",
+        coverPath,
+        ..."-map 0:0 -map 1:0 -c:v copy -id3v2_version 3".split(" "),
+        "-metadata",
+        `artist=${metadata.artist}`, // TODO: escape quote?
+        "-metadata",
+        `title=${metadata.title}`,
+        "-metadata:s:v",
+        "title=Album cover",
+        "-metadata:s:v",
+        "comment=Cover (front)",
+        outFilePath,
+      ];
+    } else {
+      // ffmpeg -i in.mp4 -id3v2_version 3 -metadata artist=xxx -metadata title=yyy out.mp3
+      args = [
+        "-y",
+        "-i",
+        inFilePath,
+        "-metadata",
+        `artist=${metadata.artist}`, // TODO: escape quote?
+        "-metadata",
+        `title=${metadata.title}`,
+        outFilePath,
+      ];
+    }
     await this.ffmpeg.run(...args);
     const dataMp3 = this.ffmpeg.FS("readFile", outFilePath);
     return dataMp3;

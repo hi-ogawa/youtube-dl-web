@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useFFmpeg } from "../utils/ffmpeg-utils";
 import { createLoader } from "../utils/loader-utils";
 import { fetchByRangesV2 } from "../utils/range-request";
+import { tinyassert } from "../utils/tinyassert";
 import {
   FormatInfo,
   VideoInfo,
@@ -81,6 +82,7 @@ const Page: React.FC = () => {
                     formatInfo={f}
                     id={id}
                     url={f.url}
+                    artist={artist ?? uploader}
                   />
                 </td>
                 <td>
@@ -124,6 +126,7 @@ const DownloadButton: React.FC<{
   formatInfo: FormatInfo;
   id: string;
   url: string;
+  artist: string;
 }> = (props) => {
   const { filesize, ext } = props.formatInfo;
 
@@ -161,11 +164,13 @@ const DownloadButton: React.FC<{
         if (ffmpeg.isSuccess) {
           setState("processing");
           const buffer = await new Blob(chunks).arrayBuffer();
+          const cover = await fetchCover(props.id);
           // TODO: display progress
           // TODO: create a form for metadata
           const bufferMp3 = await ffmpeg.data.createMp3(buffer, ext, {
-            artist: "私立恵比寿中学",
-            title: "ヘロー",
+            artist: props.artist,
+            title: props.title,
+            cover,
           });
           setBlobUrl(URL.createObjectURL(new Blob([bufferMp3])));
           setState("loaded");
@@ -255,6 +260,17 @@ const DownloadButton: React.FC<{
     </button>
   );
 };
+
+async function fetchCover(videoId: string): Promise<ArrayBuffer> {
+  const res = await fetch("/proxy", {
+    method: "POST",
+    body: JSON.stringify({
+      url: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    }),
+  });
+  tinyassert(res.ok);
+  return res.arrayBuffer();
+}
 
 const BYTE_UNITS: [number, string][] = [
   [10 ** 9, "GB"],
