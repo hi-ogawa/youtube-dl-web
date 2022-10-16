@@ -1,0 +1,14 @@
+# warm up lambda by cron job
+name: health-check
+"on":
+  schedule:
+    - cron: "*/30 * * * *"
+jobs:
+  health-check:
+    runs-on: ubuntu-20.04
+    container:
+      image: badouralix/curl-jq
+    steps:
+      - run: curl -sf https://youtube-dl-web-hiro18181.vercel.app/healthz | jq --exit-status
+      # https://www.youtube.com/watch?v=rv4wf7bzfFE
+      - run: curl -sf 'http://localhost:3000/download?video=rv4wf7bzfFE&_data=routes%2Fdownload' | jq -r --exit-status '.videoInfo.title'

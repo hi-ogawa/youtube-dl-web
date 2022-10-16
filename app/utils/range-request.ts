@@ -5,6 +5,48 @@ import { tinyassert } from "./tinyassert";
 const CHUNK_SIZE = 2_000_000;
 const PARALLEL = 1;
 
+export function fetchByRangesV2(
+  url: string,
+  totalSize: number
+): ReadableStream<Uint8Array> {
+  const numChunks = Math.ceil(totalSize / CHUNK_SIZE);
+  const rangeHeaders = range(numChunks).map((i) => {
+    const range_start = CHUNK_SIZE * i;
+    const range_end = Math.min(CHUNK_SIZE * (i + 1), totalSize) - 1;
+    return { range_start, range_end };
+  });
+
+  const rangeHeadersParallels = chunk(rangeHeaders, PARALLEL);
+  let i = 0;
+
+  return new ReadableStream({
+    async pull(controller) {
+      if (i >= rangeHeadersParallels.length) {
+        controller.close();
+        return;
+      }
+      const parallels = rangeHeadersParallels[i++];
+      const dataPromises = parallels.map(async (rangeHeader) => {
+        const res = await fetch("/proxy", {
+          method: "POST",
+          body: JSON.stringify({
+            url,
+            headers: {
+              range: `bytes=${rangeHeader.range_start}-${rangeHeader.range_end}`,
+            },
+          }),
+        });
+        tinyassert(res.ok);
+        tinyassert(res.body);
+        const arrayBuffer = await res.arrayBuffer();
+        return new Uint8Array(arrayBuffer);
+      });
+      const data = await Promise.all(dataPromises);
+      controller.enqueue(concatArrays(data));
+    },
+  });
+}
+
 // TODO: let the caller concatenate the results by returning ReadableStream<{ offset: number, data: Uint8Array }>
 export function fetchByRanges(
   url: string,

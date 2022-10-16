@@ -5,12 +5,11 @@ import React from "react";
 import { AlertCircle, Download, X } from "react-feather";
 import { z } from "zod";
 import { createLoader } from "../utils/loader-utils";
-import { fetchByRanges } from "../utils/range-request";
+import { fetchByRangesV2 } from "../utils/range-request";
 import {
   FormatInfo,
   VideoInfo,
-  YOUTUBE_DL_PROXY_URL,
-  fetchVideoInfo,
+  fetchVideoInfoV2,
   getThumbnailUrl,
   parseVideoId,
 } from "../utils/youtube";
@@ -42,7 +41,7 @@ export const loader = createLoader(async function (this) {
     return redirect("/");
   }
 
-  const videoInfo = await fetchVideoInfo(videoId);
+  const videoInfo = await fetchVideoInfoV2(videoId);
   const res: LoaderData = { videoInfo };
   return res;
 });
@@ -76,7 +75,12 @@ const Page: React.FC = () => {
             {sortedFormats.map((f) => (
               <tr key={f.url + f.format_id}>
                 <td>
-                  <DownloadButton title={title} formatInfo={f} id={id} />
+                  <DownloadButton
+                    title={title}
+                    formatInfo={f}
+                    id={id}
+                    url={f.url}
+                  />
                 </td>
                 <td>
                   {
@@ -118,6 +122,7 @@ const DownloadButton: React.FC<{
   title: string;
   formatInfo: FormatInfo;
   id: string;
+  url: string;
 }> = (props) => {
   const { filesize, ext } = props.formatInfo;
 
@@ -141,14 +146,7 @@ const DownloadButton: React.FC<{
     }
     setState("loading");
 
-    const proxyUrl =
-      YOUTUBE_DL_PROXY_URL +
-      "/download?" +
-      new URLSearchParams({
-        url: props.id,
-        format_id: props.formatInfo.format_id,
-      });
-    const stream = fetchByRanges(proxyUrl, filesize);
+    const stream = fetchByRangesV2(props.url, filesize);
     streamRef.current = stream;
 
     const reader = stream.getReader();
