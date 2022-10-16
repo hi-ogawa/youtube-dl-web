@@ -4,6 +4,7 @@ import { sortBy } from "lodash";
 import React from "react";
 import { AlertCircle, Download, X } from "react-feather";
 import { z } from "zod";
+import { useFFmpeg } from "../utils/ffmpeg-utils";
 import { createLoader } from "../utils/loader-utils";
 import { fetchByRangesV2 } from "../utils/range-request";
 import {
@@ -58,10 +59,13 @@ const Page: React.FC = () => {
     [formats]
   );
 
+  const ffmpeg = useFFmpeg();
+  ffmpeg;
+
   return (
     <div className="w-full max-w-lg flex flex-col gap-2">
       <VideoComponent id={id} title={title} author={artist ?? uploader} />
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto border rounded-lg">
         <table className="w-full table table-compact">
           <thead>
             <tr>

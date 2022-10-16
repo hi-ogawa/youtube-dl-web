@@ -7,7 +7,9 @@ import {
   useTransition,
 } from "@remix-run/react";
 import React from "react";
+import { Toaster } from "react-hot-toast";
 import { usePrevious } from "react-use";
+import { ReactQueryProvidersCustom } from "./utils/react-query-provider-custom";
 
 const Page: React.FC = () => {
   return (
@@ -29,21 +31,32 @@ const Page: React.FC = () => {
         <link rel="manifest" href="/_copy/manifest.json" />
       </head>
       <body className="h-full">
+        <ReactQueryProvidersCustom>
+          <App />
+        </ReactQueryProvidersCustom>
         <TopProgressBar />
-        <div className="h-full flex flex-col gap-2 p-2">
-          <div className="w-full flex justify-center">
-            <div className="w-full max-w-lg">
-              <SearchForm />
-            </div>
-          </div>
-          <div className="w-full flex justify-center">
-            <Outlet />
-          </div>
-        </div>
+        <Toaster />
         <Scripts />
         <LiveReload />
       </body>
     </html>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <>
+      <div className="flex flex-col gap-2 p-2">
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-lg">
+            <SearchForm />
+          </div>
+        </div>
+        <div className="w-full flex justify-center">
+          <Outlet />
+        </div>
+      </div>
+    </>
   );
 };
 
