@@ -52,7 +52,7 @@ cat > "$deploy_dir/.vercel/output/config.json" << "EOF"
     {
       "src": "^/build/(.*)$",
       "headers": {
-        "Cache-Control": "public, immutable, max-age=31536000"
+        "Cache-Control": "public, max-age=31536000"
       },
       "continue": true
     },
@@ -63,10 +63,6 @@ cat > "$deploy_dir/.vercel/output/config.json" << "EOF"
     },
     {
       "src": "^/(.*)$",
-      "headers": {
-        "cross-origin-opener-policy": "same-origin",
-        "cross-origin-embedder-policy": "require-corp"
-      },
       "dest": "/server",
       "check": true
     }
