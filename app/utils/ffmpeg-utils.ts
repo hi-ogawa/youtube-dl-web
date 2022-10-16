@@ -8,8 +8,10 @@ export class FFmpegWrapper {
 
   static async create(): Promise<FFmpegWrapper> {
     const ffmpeg = createFFmpeg({
+      // https://github.com/ffmpegwasm/ffmpeg.wasm/issues/420#issuecomment-1274150890
       // cf. scripts/copy-assets.sh
       //     app/entry.server.tsx (coop/coep headers)
+      mainName: "main",
       corePath: "/_copy/ffmpeg-core.js",
     });
     await ffmpeg.load();
@@ -79,5 +81,8 @@ export function useFFmpeg() {
     queryFn: FFmpegWrapper.create,
     staleTime: Infinity,
     cacheTime: Infinity,
+    onError: (e: any) => {
+      window.alert("[ERROR:useFFmpeg] " + e.toString());
+    },
   });
 }

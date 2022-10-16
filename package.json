@@ -24,11 +24,11 @@
     "deploy": "npm run build && vercel deploy --prebuilt build/remix/production/deploy",
     "deploy:production": "npm run build && vercel deploy --prebuilt build/remix/production/deploy --prod",
     "diff": "git diff --name-only ${DIFF_COMMIT:-HEAD} && git ls-files --others --exclude-standard",
-    "qrcode": "qrcode-terminal http://$(ip -o -4 address list wlan0 | awk '{print $4}' | cut -d / -f 1):3000"
+    "qrcode": "qrcode-terminal http://$(ip -o -4 address list wlp3s0 | awk '{print $4}' | cut -d / -f 1):3000"
   },
   "dependencies": {
     "@badrap/bar-of-progress": "^0.2.1",
-    "@ffmpeg/core": "^0.11.0",
+    "@ffmpeg/core-st": "^0.11.1",
     "@ffmpeg/ffmpeg": "^0.11.5",
     "@remix-run/node": "^1.5.1",
     "@remix-run/react": "^1.5.1",
