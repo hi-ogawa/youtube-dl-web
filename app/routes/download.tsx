@@ -5,12 +5,10 @@ import React from "react";
 import { AlertCircle, Download, X } from "react-feather";
 import { z } from "zod";
 import { createLoader } from "../utils/loader-utils";
-import { fetchByRanges, fetchByRangesV2 } from "../utils/range-request";
+import { fetchByRangesV2 } from "../utils/range-request";
 import {
   FormatInfo,
   VideoInfo,
-  YOUTUBE_DL_PROXY_URL,
-  fetchVideoInfo,
   fetchVideoInfoV2,
   getThumbnailUrl,
   parseVideoId,

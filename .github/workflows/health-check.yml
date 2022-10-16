@@ -10,3 +10,5 @@ jobs:
       image: badouralix/curl-jq
     steps:
       - run: curl -sf https://youtube-dl-web-hiro18181.vercel.app/healthz | jq --exit-status
+      # https://www.youtube.com/watch?v=rv4wf7bzfFE
+      - run: curl -sf 'http://localhost:3000/download?video=rv4wf7bzfFE&_data=routes%2Fdownload' | jq -r --exit-status '.videoInfo.title'
