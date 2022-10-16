@@ -5,7 +5,7 @@ patchedDependencies:
     hash: pi2tiyryysvr7hdhjnu762tazm
     path: patches/@remix-run__dev@1.5.1.patch
   '@remix-run/serve@1.5.1':
-    hash: 2lwxcibsvjybaxde3x2ya4aw6u
+    hash: fhiu5jznapg27v4d7qxefhwrla
     path: patches/@remix-run__serve@1.5.1.patch
 
 specifiers:
@@ -81,7 +81,7 @@ dependencies:
 devDependencies:
   '@playwright/test': 1.22.2
   '@remix-run/dev': 1.5.1_pi2tiyryysvr7hdhjnu762tazm_sfoxds7t5ydpegc3knd667wn6m
-  '@remix-run/serve': 1.5.1_2lwxcibsvjybaxde3x2ya4aw6u_sfoxds7t5ydpegc3knd667wn6m
+  '@remix-run/serve': 1.5.1_fhiu5jznapg27v4d7qxefhwrla_sfoxds7t5ydpegc3knd667wn6m
   '@tailwindcss/line-clamp': 0.3.1_tailwindcss@3.0.24
   '@types/lodash': 4.14.182
   '@types/node': 16.11.38
@@ -792,7 +792,7 @@ packages:
       react-router-dom: 6.3.0_sfoxds7t5ydpegc3knd667wn6m
     dev: false
 
-  /@remix-run/serve/1.5.1_2lwxcibsvjybaxde3x2ya4aw6u_sfoxds7t5ydpegc3knd667wn6m:
+  /@remix-run/serve/1.5.1_fhiu5jznapg27v4d7qxefhwrla_sfoxds7t5ydpegc3knd667wn6m:
     resolution: {integrity: sha512-7MaC/Ka2O3kDOuXSulkbqbRpN2n+8hO87SWK8UCtVcVk467Jp+ov8rw++bONPMlR1bkV0nlcQdqNHFNbz0A/Yw==}
     hasBin: true
     dependencies:
