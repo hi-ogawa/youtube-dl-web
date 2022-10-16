@@ -21,8 +21,22 @@ export class FFmpegWrapper {
     ext: string,
     metadata: Metadata
   ): Promise<ArrayBuffer> {
-    this.ffmpeg.run;
-    throw new Error("todo");
+    const inFilePath = `in.${ext}`;
+    const outFilePath = "out.mp3";
+    this.ffmpeg.FS("writeFile", inFilePath, new Uint8Array(data));
+    const args = [
+      "-y",
+      "-i",
+      inFilePath,
+      "-metadata",
+      `artist=${metadata.artist}`, // TODO: escape quote?
+      "-metadata",
+      `title=${metadata.title}`,
+      outFilePath,
+    ];
+    await this.ffmpeg.run(...args);
+    const dataMp3 = this.ffmpeg.FS("readFile", outFilePath);
+    return dataMp3;
   }
 }
 
@@ -30,7 +44,7 @@ export interface Metadata {
   artist: string;
   album?: string;
   title: string;
-  cover: ArrayBuffer;
+  cover?: ArrayBuffer;
 }
 
 export function useFFmpeg() {

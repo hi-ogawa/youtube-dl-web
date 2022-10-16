@@ -2,7 +2,7 @@ import { useLoaderData } from "@remix-run/react";
 import { redirect } from "@remix-run/server-runtime";
 import { sortBy } from "lodash";
 import React from "react";
-import { AlertCircle, Download, X } from "react-feather";
+import { AlertCircle, Download, Package, X } from "react-feather";
 import { z } from "zod";
 import { useFFmpeg } from "../utils/ffmpeg-utils";
 import { createLoader } from "../utils/loader-utils";
@@ -58,9 +58,6 @@ const Page: React.FC = () => {
     () => sortBy(formats, (f) => (f.filesize ? 0 : 1)),
     [formats]
   );
-
-  const ffmpeg = useFFmpeg();
-  ffmpeg;
 
   return (
     <div className="w-full max-w-lg flex flex-col gap-2">
@@ -120,7 +117,7 @@ export default Page;
 // utils
 //
 
-type DownloadState = "initial" | "loading" | "loaded";
+type DownloadState = "initial" | "loading" | "processing" | "loaded";
 
 const DownloadButton: React.FC<{
   title: string;
@@ -134,6 +131,7 @@ const DownloadButton: React.FC<{
   const [progress, setProgress] = React.useState(0);
   const [blobUrl, setBlobUrl] = React.useState<string>();
   const streamRef = React.useRef<ReadableStream<Uint8Array>>();
+  const ffmpeg = useFFmpeg();
 
   React.useEffect(() => {
     return () => {
@@ -160,6 +158,19 @@ const DownloadButton: React.FC<{
       const result = await reader.read();
       if (result.done) {
         streamRef.current = undefined;
+        if (ffmpeg.isSuccess) {
+          setState("processing");
+          const buffer = await new Blob(chunks).arrayBuffer();
+          // TODO: display progress
+          // TODO: create a form for metadata
+          const bufferMp3 = await ffmpeg.data.createMp3(buffer, ext, {
+            artist: "私立恵比寿中学",
+            title: "ヘロー",
+          });
+          setBlobUrl(URL.createObjectURL(new Blob([bufferMp3])));
+          setState("loaded");
+          break;
+        }
         setBlobUrl(URL.createObjectURL(new Blob(chunks)));
         setState("loaded");
         break;
@@ -214,12 +225,23 @@ const DownloadButton: React.FC<{
     );
   }
 
+  if (state === "processing") {
+    return (
+      <button
+        className="animate-pulse relative btn btn-sm btn-ghost flex justify-center items-center"
+        onClick={cancelDownload}
+      >
+        <Package size="20" />
+      </button>
+    );
+  }
+
   if (state === "loaded" && blobUrl) {
     return (
       <a
         className="btn btn-sm btn-primary"
         href={blobUrl}
-        download={`${props.title}.${props.formatInfo.ext}`}
+        download={`${props.title}.mp3`}
       >
         <Download size={20} />
       </a>
@@ -306,8 +328,8 @@ const RadialProgress: React.FC<{
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="3"
-      stroke-linecap="butt"
+      strokeWidth="3"
+      strokeLinecap="butt"
     >
       <circle className="text-gray-300" cx="12" cy="12" r="10" />
       <circle
@@ -316,7 +338,7 @@ const RadialProgress: React.FC<{
         cx="12"
         cy="12"
         r="10"
-        stroke-dasharray={`${dashLength} ${GAP_LENGTH}`}
+        strokeDasharray={`${dashLength} ${GAP_LENGTH}`}
         pathLength={PATH_LENGTH}
       />
     </svg>
