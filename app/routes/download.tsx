@@ -41,7 +41,6 @@ export const loader = createLoader(async function (this) {
     return redirect("/");
   }
 
-  // const videoInfo = await fetchVideoInfo(videoId);
   const videoInfo = await fetchVideoInfoV2(videoId);
   const res: LoaderData = { videoInfo };
   return res;
