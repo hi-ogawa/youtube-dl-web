@@ -2,7 +2,7 @@
 
 ```sh
 # development
-npm run install-with-patch
+pnpm i
 npm run dev
 
 # deploy (vercel)

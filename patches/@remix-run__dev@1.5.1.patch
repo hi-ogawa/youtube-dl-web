@@ -1,0 +1,13 @@
+diff --git a/compiler/utils/tsconfig/index.js b/compiler/utils/tsconfig/index.js
+index 8ac5a14cff9df9a431fc246dc131536a32884451..d0eccb5629451ce8a2bb96b7f3b0ed8ea69d728f 100644
+--- a/compiler/utils/tsconfig/index.js
++++ b/compiler/utils/tsconfig/index.js
+@@ -30,7 +30,7 @@ function createMatchPath() {
+     return undefined;
+   }
+ 
+-  writeConfigDefaults.writeConfigDefaults(configLoaderResult.configFileAbsolutePath);
++  // writeConfigDefaults.writeConfigDefaults(configLoaderResult.configFileAbsolutePath);
+   return tsConfigPaths__default["default"].createMatchPath(configLoaderResult.absoluteBaseUrl, configLoaderResult.paths, configLoaderResult.mainFields, configLoaderResult.addMatchAll);
+ }
+ 

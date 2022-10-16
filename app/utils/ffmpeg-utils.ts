@@ -42,5 +42,5 @@ export function useFFmpeg() {
     queryFn: FFmpegWrapper.create,
     staleTime: Infinity,
     cacheTime: Infinity,
-  })
+  });
 }
