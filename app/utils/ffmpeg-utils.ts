@@ -7,9 +7,6 @@ export class FFmpegWrapper {
   constructor(private ffmpeg: FFmpeg) {}
 
   static async create(): Promise<FFmpegWrapper> {
-    // TODO: cors header for emscripten wasm
-    // { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
-    // { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" }
     const ffmpeg = createFFmpeg({
       // cf. scripts/copy-assets.sh
       corePath: "/_copy/ffmpeg-core.js",
