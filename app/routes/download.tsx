@@ -134,6 +134,7 @@ const DownloadButton: React.FC<{
 
   const [state, setState] = React.useState<DownloadState>("initial");
   const [progress, setProgress] = React.useState(0);
+  const [progressFfmpeg, setProgressFfmpeg] = React.useState(0);
   const [blobUrl, setBlobUrl] = React.useState<string>();
   const streamRef = React.useRef<ReadableStream<Uint8Array>>();
   const ffmpeg = useFFmpeg();
@@ -167,13 +168,20 @@ const DownloadButton: React.FC<{
           setState("processing");
           const buffer = await new Blob(chunks).arrayBuffer();
           const cover = await fetchCover(props.id);
-          // TODO: display progress
           // TODO: create a form for metadata
-          const bufferMp3 = await ffmpeg.data.createMp3(buffer, ext, {
-            artist: props.artist,
-            title: props.title,
-            cover,
-          });
+          setProgressFfmpeg(0);
+          const bufferMp3 = await ffmpeg.data.createMp3(
+            buffer,
+            ext,
+            {
+              artist: props.artist,
+              title: props.title,
+              cover,
+            },
+            (p) => {
+              setProgressFfmpeg(p.current / p.total);
+            }
+          );
           setBlobUrl(URL.createObjectURL(new Blob([bufferMp3])));
           setState("loaded");
           break;
@@ -218,7 +226,7 @@ const DownloadButton: React.FC<{
   if (state === "loading") {
     return (
       <button
-        className="relative btn btn-sm btn-ghost flex justify-center items-center"
+        className="animate-pulse relative btn btn-sm btn-ghost flex justify-center items-center"
         onClick={cancelDownload}
       >
         <X size="20" />
@@ -238,7 +246,10 @@ const DownloadButton: React.FC<{
         className="animate-pulse relative btn btn-sm btn-ghost flex justify-center items-center"
         onClick={cancelDownload}
       >
-        <Package size="20" />
+        <Package size="16" />
+        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[26px] h-[26px]">
+          <RadialProgress className="w-full h-full" progress={progressFfmpeg} />
+        </div>
       </button>
     );
   }

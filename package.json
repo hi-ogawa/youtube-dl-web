@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@badrap/bar-of-progress": "^0.2.1",
-    "@ffmpeg/core-st": "^0.11.1",
+    "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.5",
     "@remix-run/node": "^1.5.1",
     "@remix-run/react": "^1.5.1",

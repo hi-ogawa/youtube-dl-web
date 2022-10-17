@@ -10,7 +10,7 @@ patchedDependencies:
 
 specifiers:
   '@badrap/bar-of-progress': ^0.2.1
-  '@ffmpeg/core-st': ^0.11.1
+  '@ffmpeg/core': ^0.11.0
   '@ffmpeg/ffmpeg': ^0.11.5
   '@playwright/test': ^1.19.2
   '@remix-run/dev': 1.5.1
@@ -58,7 +58,7 @@ specifiers:
 
 dependencies:
   '@badrap/bar-of-progress': 0.2.1
-  '@ffmpeg/core-st': 0.11.1
+  '@ffmpeg/core': 0.11.0
   '@ffmpeg/ffmpeg': 0.11.5
   '@remix-run/node': 1.5.1_sfoxds7t5ydpegc3knd667wn6m
   '@remix-run/react': 1.5.1_sfoxds7t5ydpegc3knd667wn6m
@@ -574,8 +574,8 @@ packages:
       - supports-color
     dev: true
 
-  /@ffmpeg/core-st/0.11.1:
-    resolution: {integrity: sha512-8R0kdXjQjjOgVaChDMUx/abrTD5/g9JFnuZLqB+lvzJbfNpNEFEZPxFR1Fu4eoON+fVq3K3URVKZcHEEGKZVTQ==}
+  /@ffmpeg/core/0.11.0:
+    resolution: {integrity: sha512-9Tt/+2PMpkGPXUK8n6He9G8Y+qR6qmCPSCw9iEKZxHHOvJ9BE/r0Fccj+YgDZTlyu6rXxc9x6EqCaFBIt7qzjA==}
     dev: false
 
   /@ffmpeg/ffmpeg/0.11.5:

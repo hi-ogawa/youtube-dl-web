@@ -8,10 +8,8 @@ export class FFmpegWrapper {
 
   static async create(): Promise<FFmpegWrapper> {
     const ffmpeg = createFFmpeg({
-      // https://github.com/ffmpegwasm/ffmpeg.wasm/issues/420#issuecomment-1274150890
       // cf. scripts/copy-assets.sh
       //     app/entry.server.tsx (coop/coep headers)
-      mainName: "main",
       corePath: "/_copy/ffmpeg-core.js",
     });
     await ffmpeg.load();
@@ -22,7 +20,8 @@ export class FFmpegWrapper {
   async createMp3(
     data: ArrayBuffer,
     ext: string,
-    metadata: Metadata
+    metadata: Metadata,
+    onProgress?: (progress: ProgressHandler) => void
   ): Promise<ArrayBuffer> {
     const inFilePath = `in.${ext}`;
     const coverPath = "cover.jpg";
@@ -62,11 +61,63 @@ export class FFmpegWrapper {
         outFilePath,
       ];
     }
+    const progress = new ProgressHandler();
+    this.ffmpeg.setProgress((p) => {
+      progress.handle(p);
+      onProgress?.(progress);
+    });
     await this.ffmpeg.run(...args);
     const dataMp3 = this.ffmpeg.FS("readFile", outFilePath);
     return dataMp3;
   }
 }
+
+//
+// :: example log ::
+//
+// {duration: 213.3, ratio: 0}
+// {duration: 0.04, ratio: 0}
+// {ratio: 426.99999999999994, time: 17.08}
+// {ratio: 853.9999999999999, time: 34.16}
+// {ratio: 1282.5, time: 51.3}
+// {ratio: 1709.4999999999998, time: 68.38}
+// {ratio: 2119.7499999999995, time: 84.78999999999999}
+// {ratio: 2531.25, time: 101.25}
+// {ratio: 2934.75, time: 117.39}
+// {ratio: 3325.2499999999995, time: 133.01}
+// {ratio: 3700.75, time: 148.03}
+// {ratio: 4071.75, time: 162.87}
+// {ratio: 4455.75, time: 178.23}
+// {ratio: 4830, time: 193.2}
+// {ratio: 5211.25, time: 208.45}
+// {ratio: 5332.75, time: 213.31}
+// {ratio: 1}
+//
+
+interface ProgressRawData {
+  ratio: number;
+  duration?: number;
+  time?: number;
+}
+
+class ProgressHandler {
+  current: number = 0;
+  total: number = 0;
+
+  handle(data: ProgressRawData): void {
+    if (!this.total && data.duration) {
+      this.total = data.duration;
+    } else if (data.ratio && data.time) {
+      this.current = data.time;
+    } else if (data.ratio === 1 && !data.time) {
+      this.current = this.total;
+    }
+  }
+}
+
+// duration ===
+// ratio === 1
+// typeof time === "undefined"
 
 export interface Metadata {
   artist: string;
