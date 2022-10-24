@@ -75,7 +75,11 @@ const RAW_INFO_SCHEMA = z.object({
         mimeType: z.string(),
         width: z.number().optional(),
         height: z.number().optional(),
-        contentLength: z.string().refine((s) => s.match(/^\d+$/)),
+        contentLength: z
+          .string()
+          .refine((s) => s.match(/^\d+$/))
+          .transform((v) => Number(v))
+          .optional(),
       })
       .array(),
   }),
@@ -90,7 +94,7 @@ export async function fetchVideoInfoV2(videoId: string): Promise<VideoInfo> {
     uploader: p.videoDetails.author,
     formats: p.streamingData.adaptiveFormats.map((f) => ({
       url: f.url,
-      filesize: Number(f.contentLength),
+      filesize: f.contentLength ?? null,
       format_id: f.itag.toString(),
       format_note: f.mimeType,
       ext: f.mimeType.split(";")[0].split("/")[1],
